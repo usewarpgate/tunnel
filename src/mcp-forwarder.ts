@@ -27,9 +27,9 @@ export class McpForwarder {
         });
 
         if (!response.ok) {
-            throw new Error(
-                `Upstream MCP server error: ${response.status} ${response.statusText}`,
-            );
+            const status = `${response.status} ${response.statusText}`;
+            await response.body?.cancel();
+            throw new Error(`Upstream MCP server error: ${status}`);
         }
 
         const contentType = response.headers.get('Content-Type') ?? '';

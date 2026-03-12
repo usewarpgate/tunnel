@@ -70,23 +70,12 @@ export class PortalClient {
 
     async respond(
         requestId: string,
-        responsePayload: Record<string, unknown>,
+        body: { response?: Record<string, unknown>; error?: string },
     ): Promise<void> {
         await this.request(
             'POST',
             `/requests/${requestId}/respond`,
-            { response: responsePayload },
-        );
-    }
-
-    async respondWithError(
-        requestId: string,
-        errorMessage: string,
-    ): Promise<void> {
-        await this.request(
-            'POST',
-            `/requests/${requestId}/respond`,
-            { error: errorMessage },
+            body,
         );
     }
 
@@ -103,7 +92,7 @@ export class PortalClient {
     }
 
     private async request(
-        method: string,
+        method: 'GET' | 'POST',
         path: string,
         body?: Record<string, unknown>,
     ): Promise<unknown> {

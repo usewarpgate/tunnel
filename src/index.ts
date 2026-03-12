@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { Agent } from './agent.js';
 import { resolveConfig } from './config.js';
+import { VERSION } from './version.js';
 
 const program = new Command();
 
@@ -11,7 +12,7 @@ program
     .description(
         'Tunnel agent for Warpgate — relay JSON-RPC requests to local MCP servers on private networks',
     )
-    .version('0.1.0')
+    .version(VERSION)
     .option(
         '--url <url>',
         'Warpgate portal URL (or set WARPGATE_URL)',

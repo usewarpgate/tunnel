@@ -1,6 +1,8 @@
+import { setTimeout } from 'node:timers/promises';
 import type { AgentConfig } from './config.js';
 import { McpForwarder } from './mcp-forwarder.js';
 import { PortalClient } from './portal-client.js';
+import { VERSION } from './version.js';
 
 export class Agent {
     private portal: PortalClient;
@@ -37,7 +39,7 @@ export class Agent {
                     `[warpgate] Reconnecting in ${backoff / 1000}s...`,
                 );
 
-                await this.sleep(backoff);
+                await setTimeout(backoff);
                 backoff = Math.min(backoff * 2, 30_000);
             }
         }
@@ -45,11 +47,7 @@ export class Agent {
 
     async stop(): Promise<void> {
         this.running = false;
-
-        if (this.heartbeatTimer) {
-            clearInterval(this.heartbeatTimer);
-            this.heartbeatTimer = null;
-        }
+        this.clearHeartbeat();
 
         try {
             await this.portal.disconnect();
@@ -60,12 +58,14 @@ export class Agent {
     }
 
     private async connectAndRun(): Promise<void> {
+        this.clearHeartbeat();
+
         console.log(
             `[warpgate] Connecting to ${this.config.portalUrl}...`,
         );
 
         const info = await this.portal.connect({
-            version: '0.1.0',
+            version: VERSION,
             platform: process.platform,
             nodeVersion: process.version,
         });
@@ -112,10 +112,9 @@ export class Agent {
                     request.payload,
                 );
 
-                await this.portal.respond(
-                    request.request_id,
+                await this.portal.respond(request.request_id, {
                     response,
-                );
+                });
 
                 console.log(
                     `[warpgate] Responded to ${request.request_id}`,
@@ -130,15 +129,21 @@ export class Agent {
                     `[warpgate] Error forwarding ${request.request_id}: ${message}`,
                 );
 
-                await this.portal.respondWithError(
-                    request.request_id,
-                    message,
-                );
+                try {
+                    await this.portal.respond(request.request_id, {
+                        error: message,
+                    });
+                } catch {
+                    // best-effort error reporting
+                }
             }
         }
     }
 
-    private sleep(ms: number): Promise<void> {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    private clearHeartbeat(): void {
+        if (this.heartbeatTimer) {
+            clearInterval(this.heartbeatTimer);
+            this.heartbeatTimer = null;
+        }
     }
 }
