@@ -1,0 +1,45 @@
+{
+    "name": "@usewarpgate/tunnel",
+    "version": "0.1.0",
+    "description": "Tunnel agent CLI for Warpgate — relay JSON-RPC requests to local MCP servers on private networks",
+    "type": "module",
+    "bin": {
+        "warpgate-tunnel": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx src/index.ts"
+    },
+    "keywords": [
+        "mcp",
+        "tunnel",
+        "warpgate",
+        "model-context-protocol",
+        "json-rpc",
+        "proxy",
+        "relay"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/usewarpgate/tunnel.git"
+    },
+    "homepage": "https://github.com/usewarpgate/tunnel",
+    "bugs": {
+        "url": "https://github.com/usewarpgate/tunnel/issues"
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "commander": "^13.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "tsx": "^4.19.0",
+        "typescript": "^5.7.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
