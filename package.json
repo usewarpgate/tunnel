@@ -8,7 +8,9 @@
     },
     "scripts": {
         "build": "tsc",
-        "dev": "tsx src/index.ts"
+        "dev": "tsx src/index.ts",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "keywords": [
         "mcp",
@@ -37,7 +39,8 @@
     "devDependencies": {
         "@types/node": "^25.5.0",
         "tsx": "^4.19.0",
-        "typescript": "^5.7.0"
+        "typescript": "^5.7.0",
+        "vitest": "^4.1.0"
     },
     "engines": {
         "node": ">=18.0.0"
