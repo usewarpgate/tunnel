@@ -40,6 +40,13 @@ describe('Agent', () => {
         vi.spyOn(console, 'log').mockImplementation(() => {});
         vi.spyOn(console, 'error').mockImplementation(() => {});
         agent = new Agent(TEST_CONFIG);
+
+        // Default: successful connection with no servers
+        const portal = getPortalMock(agent);
+        portal.connect.mockResolvedValue({
+            agent_id: 'agent_1',
+            servers: [],
+        });
     });
 
     afterEach(() => {
@@ -50,11 +57,6 @@ describe('Agent', () => {
     it('connects to portal with system metadata', async () => {
         const portal = getPortalMock(agent);
         let callCount = 0;
-
-        portal.connect.mockResolvedValue({
-            agent_id: 'agent_1',
-            servers: [],
-        });
 
         portal.nextRequest.mockImplementation(async () => {
             callCount++;
@@ -119,11 +121,6 @@ describe('Agent', () => {
         const portal = getPortalMock(agent);
         const forwarder = getForwarderMock(agent);
 
-        portal.connect.mockResolvedValue({
-            agent_id: 'agent_1',
-            servers: [],
-        });
-
         let callCount = 0;
         portal.nextRequest.mockImplementation(async () => {
             callCount++;
@@ -151,11 +148,6 @@ describe('Agent', () => {
     it('starts and clears heartbeat timer', async () => {
         const portal = getPortalMock(agent);
 
-        portal.connect.mockResolvedValue({
-            agent_id: 'agent_1',
-            servers: [],
-        });
-
         let callCount = 0;
         portal.nextRequest.mockImplementation(async () => {
             callCount++;
@@ -178,11 +170,6 @@ describe('Agent', () => {
     it('disconnects from portal on stop', async () => {
         const portal = getPortalMock(agent);
 
-        portal.connect.mockResolvedValue({
-            agent_id: 'agent_1',
-            servers: [],
-        });
-
         portal.nextRequest.mockImplementation(async () => {
             await agent.stop();
             return null;
@@ -193,7 +180,7 @@ describe('Agent', () => {
         expect(portal.disconnect).toHaveBeenCalled();
     });
 
-    it('reconnects with exponential backoff on connection error', async () => {
+    it('retries on connection error', async () => {
         const portal = getPortalMock(agent);
         let attempt = 0;
 
@@ -220,11 +207,6 @@ describe('Agent', () => {
     it('skips null requests from long-poll', async () => {
         const portal = getPortalMock(agent);
         const forwarder = getForwarderMock(agent);
-
-        portal.connect.mockResolvedValue({
-            agent_id: 'agent_1',
-            servers: [],
-        });
 
         let callCount = 0;
         portal.nextRequest.mockImplementation(async () => {
